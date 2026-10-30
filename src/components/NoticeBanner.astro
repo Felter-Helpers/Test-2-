@@ -1,0 +1,32 @@
+---
+import type { Site } from '../lib/site';
+
+interface Props {
+  banner: Site['banner'];
+}
+const { banner } = Astro.props;
+const show = banner?.active && banner.text.trim().length > 0;
+---
+
+{
+  show && (
+    <aside class="notice" aria-label="Notice">
+      <p class="container">
+        <strong>Notice:</strong> {banner!.text}
+      </p>
+    </aside>
+  )
+}
+
+<style>
+  .notice {
+    background: var(--color-text-primary);
+    color: var(--color-bg-primary);
+    font-size: var(--text-small);
+    text-align: center;
+  }
+  .notice p {
+    padding-top: var(--space-sm);
+    padding-bottom: var(--space-sm);
+  }
+</style>

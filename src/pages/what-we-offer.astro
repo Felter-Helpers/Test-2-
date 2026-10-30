@@ -1,0 +1,100 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import VisitUs from '../components/VisitUs.astro';
+import { getSite, photo } from '../lib/site';
+
+const site = await getSite();
+const { heading, intro, categories } = site.offer;
+---
+
+<BaseLayout title="What We Offer" description={intro}>
+  <div class="container page">
+    <header class="intro">
+      <h1>{heading}</h1>
+      <p>{intro}</p>
+    </header>
+
+    <ul class="grid" role="list">
+      {
+        categories.map((category, i) => (
+          <li class="card">
+            <Image
+              src={photo(category.image)}
+              alt={category.alt}
+              widths={[400, 600, 800]}
+              sizes="(min-width: 1024px) 384px, (min-width: 768px) 50vw, 100vw"
+              loading={i === 0 ? 'eager' : 'lazy'}
+            />
+            <div class="body">
+              <h2>{category.name}</h2>
+              <p>{category.description}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <VisitUs visit={site.visit} />
+</BaseLayout>
+
+<style>
+  .page {
+    padding-top: var(--space-xl);
+  }
+  .intro {
+    display: grid;
+    gap: var(--space-sm);
+    max-width: 60ch;
+    margin-bottom: var(--space-xl);
+  }
+  h1 {
+    font-size: var(--text-display);
+  }
+  .intro p {
+    color: var(--color-text-secondary);
+  }
+  .grid {
+    display: grid;
+    gap: var(--space-lg);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .card {
+    overflow: hidden;
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg-primary);
+  }
+  .card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    background: var(--color-bg-secondary);
+  }
+  .body {
+    display: grid;
+    gap: var(--space-xs);
+    padding: var(--space-md) var(--space-lg) var(--space-lg);
+  }
+  h2 {
+    font-size: var(--text-heading);
+  }
+  .body p {
+    color: var(--color-text-secondary);
+  }
+  @media (min-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

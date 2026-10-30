@@ -1,0 +1,178 @@
+---
+// Contact form delivered by Web3Forms (no backend). Submits inline with JS;
+// without JS it posts directly to Web3Forms, which redirects back here.
+import type { Site } from '../lib/site';
+
+interface Props {
+  form: Site['form'];
+}
+const { form } = Astro.props;
+const connected = form.accessKey.trim() !== '' && !form.accessKey.startsWith('YOUR_');
+const redirect = new URL('/contact/?sent=1', Astro.site ?? Astro.url).href;
+---
+
+<section class="contact-form" aria-labelledby="form-heading">
+  <h2 id="form-heading">{form.heading}</h2>
+
+  {
+    !connected && (
+      <p class="message message--warning" role="note">
+        {form.notConnectedMessage}
+      </p>
+    )
+  }
+
+  <form
+    action="https://api.web3forms.com/submit"
+    method="POST"
+    data-connected={String(connected)}
+    data-sending={form.sendingLabel}
+    data-success={form.successMessage}
+    data-error={form.errorMessage}
+  >
+    <input type="hidden" name="access_key" value={form.accessKey} />
+    <input type="hidden" name="subject" value={form.subject} />
+    <input type="hidden" name="redirect" value={redirect} />
+    <!-- Honeypot: real visitors never see or fill this. -->
+    <input type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+    <fieldset disabled={!connected}>
+      <div class="field">
+        <label for="cf-name">{form.nameLabel}</label>
+        <input id="cf-name" name="name" type="text" autocomplete="name" required />
+      </div>
+      <div class="field">
+        <label for="cf-email">{form.emailLabel}</label>
+        <input id="cf-email" name="email" type="email" autocomplete="email" required />
+      </div>
+      <div class="field">
+        <label for="cf-message">{form.messageLabel}</label>
+        <textarea id="cf-message" name="message" rows="5" required></textarea>
+      </div>
+      <button class="button" type="submit">{form.submitLabel}</button>
+    </fieldset>
+
+    <p class="message result" role="status" aria-live="polite" hidden></p>
+  </form>
+</section>
+
+<script>
+  for (const form of document.querySelectorAll<HTMLFormElement>('.contact-form form')) {
+    const result = form.querySelector<HTMLElement>('.result')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const label = button.textContent;
+    const show = (kind: 'success' | 'error', text: string) => {
+      result.textContent = text;
+      result.className = `message result message--${kind}`;
+      result.hidden = false;
+    };
+
+    // Back from a no-JS submit.
+    if (new URLSearchParams(location.search).has('sent')) show('success', form.dataset.success!);
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (form.dataset.connected !== 'true') return;
+      button.disabled = true;
+      button.textContent = form.dataset.sending!;
+      result.hidden = true;
+      try {
+        const data = Object.fromEntries(new FormData(form));
+        delete (data as Record<string, unknown>).redirect;
+        const response = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const json = await response.json();
+        if (!response.ok || !json.success) throw new Error(json.message);
+        form.reset();
+        show('success', form.dataset.success!);
+      } catch {
+        show('error', form.dataset.error!); // keep what the visitor typed
+      } finally {
+        button.disabled = false;
+        button.textContent = label;
+      }
+    });
+  }
+</script>
+
+<style>
+  h2 {
+    font-size: var(--text-heading);
+    margin-bottom: var(--space-md);
+  }
+  fieldset {
+    display: grid;
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  fieldset:disabled {
+    opacity: 0.6;
+  }
+  .field {
+    display: grid;
+    gap: var(--space-xs);
+  }
+  label {
+    font-size: var(--text-small);
+  }
+  input,
+  textarea {
+    width: 100%;
+    min-height: var(--touch-min);
+    padding: 12px var(--space-sm);
+    border: var(--border-width) solid #CCCCCC;
+    border-radius: var(--radius);
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    font: inherit;
+  }
+  textarea {
+    resize: vertical;
+  }
+  input:focus,
+  textarea:focus {
+    border-color: var(--color-accent);
+  }
+  .button {
+    margin-top: var(--space-sm);
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-weight: var(--font-weight-bold);
+  }
+  .button:disabled {
+    background: #CCCCCC;
+    cursor: not-allowed;
+  }
+  .message {
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius);
+    border-left: 3px solid;
+  }
+  .message--warning {
+    margin: 0 0 var(--space-md);
+    border-color: var(--color-text-secondary);
+    background: var(--color-bg-secondary);
+  }
+  :global(.message--success) {
+    border-color: var(--color-success);
+    color: var(--color-success);
+    background: #EDF7EE;
+  }
+  :global(.message--error) {
+    border-color: var(--color-destructive);
+    color: var(--color-destructive);
+    background: #FDECEC;
+  }
+  @media (min-width: 768px) {
+    .button {
+      justify-self: start;
+    }
+  }
+</style>

@@ -1,0 +1,60 @@
+---
+import Logo from './Logo.astro';
+import TodayHours from './TodayHours.astro';
+import type { Site } from '../lib/site';
+
+interface Props {
+  site: Site;
+}
+const { shop, hours, home } = Astro.props.site;
+---
+
+<section class="hero">
+  <div class="container inner">
+    <Logo text={shop.logoText} size={64} label={`${shop.name} logo (placeholder)`} />
+    <h1>{shop.name}</h1>
+    <p class="description">{shop.description}</p>
+    <TodayHours hours={hours} />
+    <div class="actions">
+      <a class="button" href="/what-we-offer/">{home.offerCta}</a>
+      <a class="button button--secondary" href="/contact/">{home.contactCta}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: var(--space-xl) 0 var(--space-2xl);
+    text-align: center;
+  }
+  .inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+  }
+  h1 {
+    font-size: var(--text-display);
+  }
+  .description {
+    max-width: 36ch;
+    color: var(--color-text-secondary);
+  }
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    width: 100%;
+    margin-top: var(--space-sm);
+  }
+  @media (min-width: 768px) {
+    .hero {
+      padding: var(--space-3xl) 0;
+    }
+    .actions {
+      flex-direction: row;
+      justify-content: center;
+      width: auto;
+    }
+  }
+</style>

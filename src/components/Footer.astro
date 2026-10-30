@@ -1,0 +1,68 @@
+---
+import { mailtoHref, telHref, type Site } from '../lib/site';
+
+interface Props {
+  shop: Site['shop'];
+}
+const { shop } = Astro.props;
+const { street, city, region, postalCode } = shop.address;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container inner">
+    <div>
+      <p class="name">{shop.name}</p>
+      <address>
+        {street}<br />
+        {city}, {region} {postalCode}
+      </address>
+    </div>
+    <ul class="contact" role="list">
+      <li>Call: <a href={telHref(shop.phone)}>{shop.phone}</a></li>
+      <li>Email: <a href={mailtoHref(shop.email)}>{shop.email}</a></li>
+      <li><a href="/contact/">Opening hours &amp; directions</a></li>
+    </ul>
+  </div>
+  <p class="container copyright">© {year} {shop.name}. All rights reserved.</p>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-3xl);
+    padding: var(--space-xl) 0 var(--space-lg);
+    background: var(--color-bg-secondary);
+    border-top: var(--border-width) solid var(--color-border);
+    font-size: var(--text-small);
+  }
+  .inner {
+    display: grid;
+    gap: var(--space-lg);
+  }
+  .name {
+    font-size: var(--text-body);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-xs);
+  }
+  address {
+    font-style: normal;
+  }
+  .contact {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .contact a {
+    display: inline-block;
+    padding: var(--space-xs) 0;
+  }
+  .copyright {
+    margin-top: var(--space-lg);
+    color: var(--color-text-secondary);
+  }
+  @media (min-width: 768px) {
+    .inner {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

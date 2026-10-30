@@ -1,0 +1,168 @@
+---
+import Logo from './Logo.astro';
+
+interface Props {
+  shopName: string;
+  logoText: string;
+}
+const { shopName, logoText } = Astro.props;
+
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/what-we-offer/', label: 'What We Offer' },
+  { href: '/about/', label: 'About' },
+  { href: '/contact/', label: 'Contact & Hours' },
+];
+
+const current = Astro.url.pathname.replace(/\/?$/, '/');
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a class="brand" href="/">
+      <Logo text={logoText} size={36} />
+      <span>{shopName}</span>
+    </a>
+
+    <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path class="icon-open" d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+        <path class="icon-close" d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+    </button>
+
+    <nav id="nav-menu" class="nav" aria-label="Main">
+      <ul role="list">
+        {
+          links.map((link) => (
+            <li>
+              <a href={link.href} aria-current={current === link.href ? 'page' : undefined}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const header = document.querySelector('.site-header');
+  if (toggle && header) {
+    const setOpen = (open: boolean) => {
+      header.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    };
+    toggle.addEventListener('click', () => setOpen(!header.classList.contains('is-open')));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && header.classList.contains('is-open')) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+  }
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--color-bg-secondary);
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    min-height: 64px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-height: var(--touch-min);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    text-decoration: none;
+  }
+  .menu-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--touch-min);
+    height: var(--touch-min);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--color-text-primary);
+    cursor: pointer;
+  }
+  .icon-close {
+    display: none;
+  }
+  .nav ul {
+    display: flex;
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .nav a {
+    display: flex;
+    align-items: center;
+    min-height: var(--touch-min);
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  .nav a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+  .nav a[aria-current='page'] {
+    color: var(--color-accent);
+    font-weight: var(--font-weight-bold);
+  }
+
+  /* Mobile: collapse the nav behind the toggle (only when JS is running). */
+  @media (max-width: 767px) {
+    :global(html.js) .menu-toggle {
+      display: inline-flex;
+    }
+    :global(html.js) .nav {
+      display: none;
+      width: 100%;
+    }
+    :global(html.js) .is-open .nav {
+      display: block;
+    }
+    .is-open .icon-open {
+      display: none;
+    }
+    .is-open .icon-close {
+      display: inline;
+    }
+    .nav ul {
+      flex-direction: column;
+      gap: 0;
+      padding-bottom: var(--space-sm);
+    }
+    .nav li + li {
+      border-top: var(--border-width) solid var(--color-border);
+    }
+    /* Without JS, links simply wrap under the brand. */
+    :global(html:not(.js)) .nav ul {
+      flex-direction: row;
+      flex-wrap: wrap;
+      column-gap: var(--space-md);
+    }
+    :global(html:not(.js)) .nav li + li {
+      border-top: 0;
+    }
+  }
+</style>

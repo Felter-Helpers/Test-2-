@@ -1,0 +1,156 @@
+# ------------------------------------------------------------------
+# Kelvin site content: edit this one file to change the whole site.
+# Everything below is PLACEHOLDER until the client's real details arrive.
+# ------------------------------------------------------------------
+
+shop:
+  name: "Kelvin Goods"
+  description: "Quality goods and friendly service, open since 1985"
+  logoText: "K"            # placeholder wordmark letter; swap for a real logo later
+  address:
+    street: "123 Main Street"
+    city: "Springfield"
+    region: "IL"
+    postalCode: "62701"
+  phone: "+1-217-555-0123"
+  email: "hello@example.com"
+
+# Opening hours. Times are 24-hour "HH:MM" in the shop's own time zone.
+hours:
+  timeZone: "America/Chicago"
+  weekly:
+    monday:    { open: "09:00", close: "18:00" }
+    tuesday:   { open: "09:00", close: "18:00" }
+    wednesday: { open: "09:00", close: "18:00" }
+    thursday:  { open: "09:00", close: "18:00" }
+    friday:    { open: "09:00", close: "20:00" }
+    saturday:  { open: "10:00", close: "17:00" }
+    sunday:    { closed: true }
+  # One-off dates that override the weekly hours.
+  exceptions:
+    - date: "2026-11-26"
+      closed: true
+      note: "Closed for Thanksgiving"
+    - date: "2026-12-25"
+      closed: true
+      note: "Closed for Christmas"
+    - date: "2026-12-26"
+      open: "11:00"
+      close: "15:00"
+      note: "Reduced hours for stocktake"
+
+# Sitewide notice. Set active: true to show it on every page.
+banner:
+  active: true
+  text: "Holiday hours: closed Dec 25, open 11am–3pm Dec 26."
+
+home:
+  offerCta: "See what we offer"
+  contactCta: "Get in touch"
+
+# "Come see us" block shown at the bottom of What We Offer and About.
+visit:
+  heading: "Come see us"
+  text: "Everything is better in person. Drop in and have a browse."
+  linkLabel: "Opening hours & directions"
+
+# ---- What We Offer page ----
+# Photos live in src/assets/photos/. To swap one: drop in the new file
+# and change the filename here. Alt text is required.
+# Descriptions: 1-2 sentences, about 140 characters max.
+offer:
+  heading: "What we offer"
+  intro: "A hand-picked range for your home, kitchen and garden, plus gifts and work from local makers."
+  categories:
+    - name: "Homeware"
+      description: "Cushions, throws, lamps and the little things that make a house feel like home."
+      image: "category-homeware.jpg"
+      alt: "Placeholder photo for the homeware category"
+    - name: "Kitchen"
+      description: "Sturdy cookware, everyday tableware and clever tools that earn their drawer space."
+      image: "category-kitchen.jpg"
+      alt: "Placeholder photo for the kitchen category"
+    - name: "Gifts"
+      description: "Thoughtful presents for every budget, with free gift wrapping at the till."
+      image: "category-gifts.jpg"
+      alt: "Placeholder photo for the gifts category"
+    - name: "Garden"
+      description: "Planters, hand tools and seeds to get your outdoor space growing."
+      image: "category-garden.jpg"
+      alt: "Placeholder photo for the garden category"
+    - name: "Stationery"
+      description: "Notebooks, cards and pens for writers, planners and list-makers."
+      image: "category-stationery.jpg"
+      alt: "Placeholder photo for the stationery category"
+    - name: "Local makers"
+      description: "Ceramics, prints and crafts made by artists within a few miles of the shop."
+      image: "category-local-makers.jpg"
+      alt: "Placeholder photo for the local makers category"
+
+# ---- About page ----
+about:
+  heading: "About us"
+  photo: "shop-front.jpg"
+  photoAlt: "Placeholder photo of the shop front"
+  story:
+    - "Kelvin Goods opened its doors in 1985 as a small hardware counter on Main Street. Over the years it grew into the shop it is today, with a little bit of everything for the home."
+    - "We are still family-run, and we still believe the best way to shop is in person: picking things up, asking questions and leaving with something you love."
+  factsHeading: "Quick facts"
+  facts:
+    - label: "Founded"
+      value: "1985"
+    - label: "Location"
+      value: "Main Street, Springfield"
+    - label: "Known for"
+      value: "Friendly advice and local makers"
+  teamHeading: "Meet the team"
+  team:
+    - name: "Sam Kelvin"
+      role: "Owner"
+      bio: "Took over the shop from their parents in 2005 and still works the counter most days."
+      photo: "team-owner.jpg"
+      photoAlt: "Placeholder portrait of Sam Kelvin"
+    - name: "Priya Patel"
+      role: "Shop manager"
+      bio: "Looks after buying and the local makers range. Ask her about anything in the shop."
+
+# ---- Contact & Hours page ----
+contact:
+  heading: "Contact & hours"
+  callLabel: "Call"            # shown as "Call +1-217-555-0123"
+  emailLabel: "Email us"
+  directionsLabel: "Get directions"
+  hoursHeading: "Opening hours"
+  upcomingHeading: "Upcoming changes"
+  upcomingDays: 60             # how far ahead to list special hours
+
+map:
+  buttonLabel: "Show map"
+  consentNote: "Loading the map connects to Google, which may set cookies."
+
+form:
+  heading: "Send us a message"
+  # Get a free key at https://web3forms.com and paste it here. Until then the form shows a "not connected" message.
+  accessKey: "5b31588b-f66e-4f0c-9edf-be4af3366667"
+  subject: "New message from the Kelvin Goods website"
+  nameLabel: "Your name"
+  emailLabel: "Your email"
+  messageLabel: "Your message"
+  submitLabel: "Send message"
+  sendingLabel: "Sending…"
+  successMessage: "Thank you! We'll be in touch soon."
+  errorMessage: "Something went wrong. Please try again, or call or email us instead."
+  notConnectedMessage: "The form isn't connected yet. Please call or email us instead."
+
+testimonials:
+  heading: "What customers say"
+  items:
+    - quote: "Great service and a fantastic selection. I keep coming back!"
+      author: "Jane Doe"
+      relation: "Regular customer"
+    - quote: "The staff really know their stuff and never rush you."
+      author: "John Smith"
+      relation: "Local shopper"
+    - quote: "My favourite shop in town. Always something new to find."
+      author: "Alice Johnson"
+      relation: "Customer since 2010"

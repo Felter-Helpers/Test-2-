@@ -1,0 +1,156 @@
+---
+// Weekly hours plus upcoming special hours. "Today" and "upcoming" are worked out
+// in the browser in the shop's time zone; without JS every listed exception shows.
+import { DAYS, formatTime, type Site } from '../lib/site';
+
+interface Props {
+  hours: Site['hours'];
+  heading: string;
+  upcomingHeading: string;
+  upcomingDays: number;
+}
+const { hours, heading, upcomingHeading, upcomingDays } = Astro.props;
+
+const weekOrder = [...DAYS.slice(1), DAYS[0]];
+const dayName = (d: string) => d[0].toUpperCase() + d.slice(1);
+const describe = (h: { closed?: boolean; open?: string; close?: string }) =>
+  h.closed || !h.open || !h.close ? 'Closed' : `${formatTime(h.open)}–${formatTime(h.close)}`;
+const prettyDate = (iso: string) =>
+  new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
+const exceptions = [...hours.exceptions].sort((a, b) => a.date.localeCompare(b.date));
+---
+
+<section class="hours" data-tz={hours.timeZone} data-window={upcomingDays} aria-labelledby="hours-heading">
+  <h2 id="hours-heading">{heading}</h2>
+  <table>
+    <tbody>
+      {
+        weekOrder.map((day) => (
+          <tr data-day={day}>
+            <th scope="row">{dayName(day)}</th>
+            <td>{describe(hours.weekly[day])}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+
+  {
+    exceptions.length > 0 && (
+      <div class="upcoming">
+        <h3>{upcomingHeading}</h3>
+        <ul role="list">
+          {exceptions.map((x) => (
+            <li data-date={x.date}>
+              <span class="date">{prettyDate(x.date)}</span>
+              <span>
+                <strong>{describe(x)}</strong>
+                {x.note && <span class="note"> · {x.note}</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+</section>
+
+<script>
+  for (const section of document.querySelectorAll<HTMLElement>('.hours[data-tz]')) {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: section.dataset.tz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      weekday: 'long',
+    }).formatToParts(new Date());
+    const get = (t: string) => parts.find((p) => p.type === t)!.value;
+    const today = `${get('year')}-${get('month')}-${get('day')}`;
+    const weekday = get('weekday').toLowerCase();
+
+    const row = section.querySelector<HTMLElement>(`tr[data-day="${weekday}"]`);
+    if (row) {
+      row.classList.add('is-today');
+      row.querySelector('th')!.insertAdjacentHTML('beforeend', ' <span class="today-tag">Today</span>');
+    }
+
+    // Only list exceptions from today up to N days ahead.
+    const windowDays = Number(section.dataset.window);
+    const end = new Date(`${today}T00:00:00Z`);
+    end.setUTCDate(end.getUTCDate() + windowDays);
+    const endIso = end.toISOString().slice(0, 10);
+    const items = section.querySelectorAll<HTMLElement>('li[data-date]');
+    let shown = 0;
+    for (const li of items) {
+      const date = li.dataset.date!;
+      const visible = date >= today && date <= endIso;
+      li.hidden = !visible;
+      if (visible) shown++;
+    }
+    const upcoming = section.querySelector<HTMLElement>('.upcoming');
+    if (upcoming) upcoming.hidden = shown === 0;
+  }
+</script>
+
+<style>
+  h2 {
+    font-size: var(--text-heading);
+    margin-bottom: var(--space-md);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th,
+  td {
+    padding: var(--space-sm) 0;
+    border-bottom: var(--border-width) solid var(--color-border);
+    text-align: left;
+    font-weight: var(--font-weight-regular);
+  }
+  td {
+    text-align: right;
+  }
+  tr.is-today th,
+  tr.is-today td {
+    font-weight: var(--font-weight-bold);
+  }
+  :global(.today-tag) {
+    margin-left: var(--space-xs);
+    padding: 0 var(--space-sm);
+    border-radius: var(--radius);
+    background: var(--color-accent);
+    color: #FFFFFF;
+    font-size: var(--text-small);
+    font-weight: var(--font-weight-bold);
+  }
+  .upcoming {
+    margin-top: var(--space-lg);
+    padding: var(--space-md);
+    border-left: 3px solid var(--color-accent);
+    background: var(--color-bg-secondary);
+  }
+  h3 {
+    font-size: var(--text-body);
+    margin-bottom: var(--space-sm);
+  }
+  .upcoming ul {
+    display: grid;
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .upcoming li {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--space-md);
+  }
+  .date {
+    min-width: 7.5em;
+  }
+  .note {
+    color: var(--color-text-secondary);
+    font-size: var(--text-small);
+  }
+</style>

@@ -1,0 +1,103 @@
+---
+// Today's hours are worked out in the visitor's browser, in the SHOP's time zone,
+// so the static page never goes stale. Without JS, the weekly hours show instead.
+import { DAYS, formatTime, type Site } from '../lib/site';
+
+interface Props {
+  hours: Site['hours'];
+}
+const { hours } = Astro.props;
+
+const weekOrder = [...DAYS.slice(1), DAYS[0]];
+const label = (d: string) => d[0].toUpperCase() + d.slice(1, 3);
+const describe = (h: { closed?: boolean; open?: string; close?: string }) =>
+  h.closed || !h.open || !h.close ? 'Closed' : `${formatTime(h.open)}–${formatTime(h.close)}`;
+---
+
+<div class="today" data-hours={JSON.stringify(hours)}>
+  <p class="today-line" hidden></p>
+  <p class="today-note" hidden></p>
+  <dl class="weekly">
+    {
+      weekOrder.map((day) => (
+        <div>
+          <dt>{label(day)}</dt>
+          <dd>{describe(hours.weekly[day])}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</div>
+
+<script>
+  type Day = { closed?: boolean; open?: string; close?: string };
+  type Exception = Day & { date: string; note?: string };
+  type Hours = { timeZone: string; weekly: Record<string, Day>; exceptions: Exception[] };
+
+  const fmt = (hhmm: string) => {
+    const [h, m] = hhmm.split(':').map(Number);
+    const hour = h % 12 || 12;
+    const suffix = h >= 12 ? 'pm' : 'am';
+    return m ? `${hour}:${String(m).padStart(2, '0')}${suffix}` : `${hour}${suffix}`;
+  };
+
+  for (const el of document.querySelectorAll<HTMLElement>('.today')) {
+    const hours: Hours = JSON.parse(el.dataset.hours!);
+    // Date and weekday "now" in the shop's time zone.
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: hours.timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      weekday: 'long',
+    }).formatToParts(new Date());
+    const get = (t: string) => parts.find((p) => p.type === t)!.value;
+    const isoDate = `${get('year')}-${get('month')}-${get('day')}`;
+    const weekday = get('weekday').toLowerCase();
+
+    const exception = hours.exceptions.find((x) => x.date === isoDate);
+    const today: Day = exception ?? hours.weekly[weekday];
+    const closed = today.closed || !today.open || !today.close;
+
+    const line = el.querySelector<HTMLElement>('.today-line')!;
+    line.innerHTML = closed
+      ? '<strong>Closed today</strong>'
+      : `Open today <strong>${fmt(today.open!)}–${fmt(today.close!)}</strong>`;
+    line.hidden = false;
+
+    if (exception?.note) {
+      const note = el.querySelector<HTMLElement>('.today-note')!;
+      note.textContent = `Special hours: ${exception.note}`;
+      note.hidden = false;
+    }
+    el.querySelector<HTMLElement>('.weekly')!.hidden = true;
+    el.classList.add('is-computed');
+  }
+</script>
+
+<style>
+  .today {
+    display: inline-block;
+    padding: var(--space-sm) var(--space-md);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg-secondary);
+  }
+  .today-note {
+    font-size: var(--text-small);
+    color: var(--color-text-secondary);
+  }
+  .weekly {
+    margin: 0;
+    font-size: var(--text-small);
+    text-align: left;
+  }
+  .weekly div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-lg);
+  }
+  .weekly dd {
+    margin: 0;
+  }
+</style>

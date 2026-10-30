@@ -1,0 +1,51 @@
+/* ------------------------------------------------------------------
+   Brand tokens: edit this file to rebrand the site (colors, fonts, spacing).
+   Placeholder look: neutral greys + one accent color.
+   ------------------------------------------------------------------ */
+:root {
+  /* Spacing (8-point scale) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Font families (swap in a brand font here) */
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Font sizes */
+  --text-small: 14px;
+  --text-body: 16px;
+  --text-heading: 24px;
+  --text-display: 32px;
+
+  /* Weights & line heights */
+  --font-weight-regular: 400;
+  --font-weight-bold: 600;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+
+  /* Colors */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F5F5F5;
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #666666;
+  --color-accent: #0066CC;
+  --color-accent-dark: #0052A3;
+  --color-destructive: #D32F2F;
+  --color-success: #388E3C;
+  --color-border: #EEEEEE;
+
+  /* Borders, corners, shadows */
+  --radius: 4px;
+  --border-width: 1px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  /* Layout */
+  --content-max: 1200px;
+  --touch-min: 44px;
+}

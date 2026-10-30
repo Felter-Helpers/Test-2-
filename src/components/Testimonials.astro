@@ -1,0 +1,71 @@
+---
+import type { Site } from '../lib/site';
+
+interface Props {
+  testimonials: Site['testimonials'];
+}
+const { heading, items } = Astro.props.testimonials;
+---
+
+{
+  items.length > 0 && (
+    <section class="testimonials" aria-labelledby="testimonials-heading">
+      <div class="container">
+        <h2 id="testimonials-heading">{heading}</h2>
+        <ul class="grid" role="list">
+          {items.map((t) => (
+            <li class="card">
+              <blockquote>
+                <p>“{t.quote}”</p>
+              </blockquote>
+              <p class="author">{t.author}</p>
+              {t.relation && <p class="relation">{t.relation}</p>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .testimonials {
+    padding-top: var(--space-xl);
+    border-top: var(--border-width) solid var(--color-border);
+  }
+  h2 {
+    font-size: var(--text-heading);
+    text-align: center;
+    margin-bottom: var(--space-lg);
+  }
+  .grid {
+    display: grid;
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-lg);
+    border-radius: var(--radius);
+    background: var(--color-bg-secondary);
+  }
+  blockquote {
+    margin: 0 0 var(--space-md);
+    flex: 1;
+  }
+  .author {
+    font-weight: var(--font-weight-bold);
+  }
+  .relation {
+    font-size: var(--text-small);
+    color: var(--color-text-secondary);
+  }
+  @media (min-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
